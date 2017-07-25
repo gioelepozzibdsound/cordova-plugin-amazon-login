@@ -1,0 +1,11 @@
+{
+  "name": "cordova-plugin-amazon-login",
+  "version": "1.0.0",
+  "cordova": {
+    "id": "cordova-plugin-amazon-login",
+    "platforms": [
+      "android"
+    ]
+  },
+  "description": "A Cordova Plugin for Amazon Login"
+}
