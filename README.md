@@ -36,3 +36,53 @@ TARGET=release cordova prepare
 ```
 
 
+
+### iOS
+
+- If you have not installed Xcode, you can get it from https://developer.apple.com/xcode.
+- Download the [Amazon Mobile App SDK] (https://developer.amazon.com/public/resources/development-tools/sdk) and extract the files to a directory on your hard drive.
+- You should see a LoginWithAmazon.framework directory in the LoginWithAmazon parent directory. This contains the Login with Amazon library.
+- With your project open in Xcode, select the Frameworks folder, then click File from the main menu and select Add Files to "project". In the dialog, select LoginWithAmazon.framework and click Add. 
+- Select Build Settings. Click All to view all settings.
+- Under Search Paths, ensure that the LoginWithAmazon.framework directory is in the Framework Search Paths. For example:
+- In the main menu, click Product and select Build. The build should complete successfully.
+- [Add a URL Scheme to Your App Property List](https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/create_ios_project.html#add_url_scheme) 
+- Get Amazon API key for your iOS app
+- Install plugin
+
+```
+cordova plugin add ~/workspace/edu-com/cordova-plugin-amazon-login --variable IOS_API_KEY="blah"                 
+```
+## API
+
+### Authorize
+
+`window.AmazonLogin.authorize(Object options, Function success, Function failure)`
+
+Success function returns an Object like:
+
+	{
+		accessToken: "...",
+		user: {
+		    name: "Full Name",
+            email: "email@example.com",
+            user_id: "634565435",
+            postal_code: '12345'
+
+		}
+	}
+
+Failure function returns an error String.
+
+
+### FetchUserProfile
+
+TBD
+
+### GetToken
+
+TBD
+
+### SignOut
+
+`window.AmazonLogin.signOut(Function success, Function failure)`

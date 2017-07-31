@@ -15,18 +15,18 @@
     <platform name="android">
         <js-module src="www/plugin.js" name="plugin">
             <runs/>
-            <clobbers target="AmazonLogin" />
+            <clobbers target="AmazonLogin"/>
         </js-module>
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="AmazonLogin">
-                <param name="android-package" value="com.education.AmazonLogin" />
-                <param name="onload" value="true" />
+                <param name="android-package" value="com.education.AmazonLogin"/>
+                <param name="onload" value="true"/>
             </feature>
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
-            <uses-permission android:name="android.permission.INTERNET" />
-            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+            <uses-permission android:name="android.permission.INTERNET"/>
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
@@ -44,9 +44,37 @@
             </activity>
         </config-file>
 
-        <source-file src="src/android/com/education/AmazonLogin.java" target-dir="src/com/education" />
+        <source-file src="src/android/com/education/AmazonLogin.java" target-dir="src/com/education"/>
     </platform>
 
-    <hook type="after_prepare" src="scripts/android/after_prepare.js" />
+    <!-- ios -->
+    <platform name="ios">
+        <js-module src="www/plugin.js" name="plugin">
+            <runs/>
+            <clobbers target="AmazonLogin"/>
+        </js-module>
+        <config-file target="config.xml" parent="/*">
+            <feature name="AmazonLogin">
+                <param name="ios-package" value="AmazonLogin" onload="true"/>
+            </feature>
+            <plugin name="AmazonLogin" value="AmazonLogin"/>
+            <access origin='*.amazon.com' allows-arbitrary-loads-in-media='true'
+                    allows-arbitrary-loads-in-web-content='true' allows-local-networking='true'/>
+        </config-file>
+
+        <header-file src="src/ios/AmazonLogin.h"/>
+        <source-file src="src/ios/AmazonLogin.m"/>
+
+        <framework src="SafariServices.framework" weak="true"/>
+        <framework src="Security.framework" weak="true"/>
+
+        <preference name="IOS_API_KEY"/>
+
+        <config-file target="*-Info.plist" parent="APIKey">
+            <string>$IOS_API_KEY</string>
+        </config-file>
+    </platform>
+
+    <hook type="after_prepare" src="scripts/android/after_prepare.js"/>
 
 </plugin>

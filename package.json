@@ -4,7 +4,8 @@
   "cordova": {
     "id": "cordova-plugin-amazon-login",
     "platforms": [
-      "android"
+      "android",
+      "ios"
     ]
   },
   "description": "A Cordova Plugin for Amazon Login"
