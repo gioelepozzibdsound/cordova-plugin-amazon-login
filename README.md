@@ -51,7 +51,7 @@ TARGET=release cordova prepare
 - Install plugin
 
 ```
-cordova plugin add https://github.com/edu-com/cordova-plugin-amazon-login.git
+cordova plugin add https://github.com/edu-com/cordova-plugin-amazon-login.git --variable IOS_API_KEY="blah"
 ```
 ## API
 
