@@ -1,8 +1,8 @@
 var exec = require('cordova/exec');
 
-var PLUGIN_NAME = 'AmazonLogin';
+var PLUGIN_NAME = 'AmazonLoginPlugin';
 
-var AmazonLogin = {
+var AmazonLoginPlugin = {
   authorize: function (options, successCallback, errorCallback) {
     exec(successCallback, errorCallback, PLUGIN_NAME, 'authorize', [options]);
   },
@@ -18,4 +18,4 @@ var AmazonLogin = {
 };
 
 
-module.exports = AmazonLogin;
+module.exports = AmazonLoginPlugin;

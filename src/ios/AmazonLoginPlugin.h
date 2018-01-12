@@ -1,6 +1,6 @@
 #import <Cordova/CDVPlugin.h>
 
-@interface AmazonLogin : CDVPlugin {
+@interface AmazonLoginPlugin : CDVPlugin {
 }
 
 - (void)authorize:(CDVInvokedUrlCommand *)command;

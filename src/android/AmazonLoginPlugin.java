@@ -27,8 +27,8 @@ import com.amazon.identity.auth.device.api.authorization.User;
 import com.amazon.identity.auth.device.api.workflow.RequestContext;
 
 
-public class AmazonLogin extends CordovaPlugin {
-    private static final String TAG = "AmazonLogin";
+public class AmazonLoginPlugin extends CordovaPlugin {
+    private static final String TAG = "AmazonLoginPlugin";
 
     private static final String ACTION_AUTHORIZE = "authorize";
     private static final String ACTION_FETCH_USER_PROFILE = "fetchUserProfile";
@@ -74,7 +74,7 @@ public class AmazonLogin extends CordovaPlugin {
             }
         });
 
-        Log.d(TAG, "Initializing AmazonLogin");
+        Log.d(TAG, "Initializing AmazonLoginPlugin");
     }
 
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {

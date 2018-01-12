@@ -3,28 +3,28 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-amazon-login"
-        version="1.0.0">
-    <name>Amazon Login Plugin</name>
-    <description>A Cordova Plugin for Amazon Login</description>
+        version="2.0.0">
+    <name>Login with Amazon Plugin</name>
+    <description>A Cordova Plugin for Login with Amazon. Use your Amazon account to authenticate with the app.</description>
     <license>MIT</license>
     <keywords>Amazon, Amazon Login, Login, OAuth, Identity, Authentication</keywords>
     <repo>https://github.com/edu-com/cordova-plugin-amazon-login.git</repo>
     <issue>https://github.com/edu-com/cordova-plugin-amazon-login/issues</issue>
 
+    <js-module src="www/plugin.js" name="plugin">
+        <clobbers target="AmazonLoginPlugin"/>
+    </js-module>
+
     <!-- android -->
     <platform name="android">
-        <js-module src="www/plugin.js" name="plugin">
-            <runs/>
-            <clobbers target="AmazonLogin"/>
-        </js-module>
-        <config-file target="res/xml/config.xml" parent="/*">
-            <feature name="AmazonLogin">
-                <param name="android-package" value="com.education.AmazonLogin"/>
+        <config-file parent="/*" target="res/xml/config.xml" >
+            <feature name="AmazonLoginPlugin">
+                <param name="android-package" value="com.education.AmazonLoginPlugin"/>
                 <param name="onload" value="true"/>
             </feature>
         </config-file>
 
-        <config-file target="AndroidManifest.xml" parent="/manifest">
+        <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.INTERNET"/>
             <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
         </config-file>
@@ -44,26 +44,24 @@
             </activity>
         </config-file>
 
-        <source-file src="src/android/com/education/AmazonLogin.java" target-dir="src/com/education"/>
+        <source-file src="src/android/AmazonLoginPlugin.java" target-dir="src/com/education"/>
+        <framework src="src/android/build-extras.gradle" custom="true" type="gradleReference" />
+        <hook type="after_prepare" src="scripts/android/after_prepare.js"/>
     </platform>
 
     <!-- ios -->
     <platform name="ios">
-        <js-module src="www/plugin.js" name="plugin">
-            <runs/>
-            <clobbers target="AmazonLogin"/>
-        </js-module>
         <config-file target="config.xml" parent="/*">
-            <feature name="AmazonLogin">
-                <param name="ios-package" value="AmazonLogin" onload="true"/>
+            <feature name="AmazonLoginPlugin">
+                <param name="ios-package" value="AmazonLoginPlugin" onload="true"/>
             </feature>
-            <plugin name="AmazonLogin" value="AmazonLogin"/>
+            <plugin name="AmazonLoginPlugin" value="AmazonLoginPlugin"/>
             <access origin='*.amazon.com' allows-arbitrary-loads-in-media='true'
                     allows-arbitrary-loads-in-web-content='true' allows-local-networking='true'/>
         </config-file>
 
-        <header-file src="src/ios/AmazonLogin.h"/>
-        <source-file src="src/ios/AmazonLogin.m"/>
+        <header-file src="src/ios/AmazonLoginPlugin.h"/>
+        <source-file src="src/ios/AmazonLoginPlugin.m"/>
 
         <framework src="SafariServices.framework" weak="true"/>
         <framework src="Security.framework" weak="true"/>
@@ -74,7 +72,5 @@
             <string>$IOS_API_KEY</string>
         </config-file>
     </platform>
-
-    <hook type="after_prepare" src="scripts/android/after_prepare.js"/>
 
 </plugin>

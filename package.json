@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-amazon-login",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "cordova": {
     "id": "cordova-plugin-amazon-login",
     "platforms": [
@@ -8,5 +8,27 @@
       "ios"
     ]
   },
-  "description": "A Cordova Plugin for Amazon Login"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/edu-com/cordova-plugin-amazon-login"
+  },
+  "bugs": {
+    "url": "https://github.com/edu-com/cordova-plugin-amazon-login/issues"
+  },
+  "description": "A Cordova Plugin for Login with Amazon. Use your Amazon account to authenticate with the app.",
+  "keywords": [
+    "Amazon",
+    "Amazon SignIn",
+    "Amazon Sign In",
+    "AmazonSignIn",
+    "Amazon Login",
+    "Login with Amazon",
+    "Login",
+    "OAuth",
+    "Identity",
+    "Authentication",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-ios"
+  ]
 }

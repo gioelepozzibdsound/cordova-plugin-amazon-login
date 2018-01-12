@@ -1,8 +1,9 @@
-# Cordova Plugin for Amazon Login
+# Cordova Plugin Login with Amazon
 
-This plugin allows you to authenticate and identify users with Amazon Login on Android. 
-
-##Installation
+A Cordova Plugin for Login with Amazon. Use your Amazon account to authenticate with the app.
+This plugin is a wrapper around native android and iOS libraries developed by Amazon.
+ 
+##Prerequisites
 
 ### Android
 
@@ -28,14 +29,13 @@ For example, your `config\project.json` might look like this:
 }
 ```
 
+
 By default, the value of API key from `debug` section will be used.
 In order to use API key from `release` section 
 
 ```
 TARGET=release cordova prepare
 ```
-
-
 
 ### iOS
 
@@ -48,11 +48,14 @@ TARGET=release cordova prepare
 - In the main menu, click Product and select Build. The build should complete successfully.
 - [Add a URL Scheme to Your App Property List](https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/create_ios_project.html#add_url_scheme) 
 - Get Amazon API key for your iOS app
-- Install plugin
+ 
+ 
+##Installation
 
 ```
-cordova plugin add https://github.com/edu-com/cordova-plugin-amazon-login.git --variable IOS_API_KEY="blah"
+cordova plugin add https://github.com/edu-com/cordova-plugin-amazon-login.git#2.0.0 --variable IOS_API_KEY="your-key-here"
 ```
+
 ## API
 
 ### Authorize
@@ -81,7 +84,23 @@ TBD
 
 ### GetToken
 
-TBD
+`window.AmazonLoginPlugin.getToken(Object options,Function success, Function failure)`
+
+Success function returns an Object like:
+
+	{
+		accessToken: "...",
+		user: {
+		    name: "Full Name",
+            email: "email@example.com",
+            user_id: "634565435",
+            postal_code: '12345'
+
+		}
+	}
+
+Failure function returns an error String.
+
 
 ### SignOut
 
