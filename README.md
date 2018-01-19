@@ -50,10 +50,10 @@ TARGET=release cordova prepare
 - Get Amazon API key for your iOS app
  
  
-##Installation
+## Installation
 
 ```
-cordova plugin add https://github.com/edu-com/cordova-plugin-amazon-login.git#2.0.0 --variable IOS_API_KEY="your-key-here"
+cordova plugin add https://github.com/edu-com/cordova-plugin-amazon-login.git#v2.0.0 --variable IOS_API_KEY="your-key-here"
 ```
 
 ## API
