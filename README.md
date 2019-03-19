@@ -3,6 +3,7 @@
 A Cordova Plugin for Login with Amazon. Use your Amazon account to authenticate with the app.
 Also supports Companion App APIs for registration of AVS devices.
 This plugin is a wrapper around native android and iOS libraries developed by Amazon.
+It is advised that you are aware that without having the Amazon Shopping App on the device, on Andreoid, the Amazon libraries will invoke a session of the default browser. Typically this is Chrome which would be fine... however for users with other browsers, such as Firefox, this plugin would break. This is a known issue and stems from how Amazon's libraries work.
 
 Originally from:
 ``
@@ -19,7 +20,7 @@ This is to provide support to launch the Alexa App if present instead of linking
 
 iOS support is still experimental.
  
-##Prerequisites
+## Prerequisites
 
 ### Android
 
@@ -33,14 +34,17 @@ iOS support is still experimental.
 For example, your `build.json` might look like this:
 
 ```
-"android": {
-    "debug": {
-      "AMAZON_API_KEY" : "hdgGHHDG......8yRM=="
-    },
-    "release": {
-      "AMAZON_API_KEY" : "dh8HGuDQ......rt5H=="
-    }
+"android": 
+{
+  "debug": 
+  {
+    "AMAZON_API_KEY" : "hdgGHHDG......8yRM=="
   },
+  "release": 
+  {
+    "AMAZON_API_KEY" : "dh8HGuDQ......rt5H=="
+  }
+},
 ```
 
 
@@ -97,26 +101,31 @@ Some profile scopes cannot be mixed.
 
 Invoke with the following options:
 
+```
   var USERID = 0x00010;
   var PROFILE = 0x00020;
   var POSTAL_CODE = 0x00040;
-	{
+  var options = {
     scopeFlag: USERID | PROFILE | POSTAL_CODE,
 	}
+```
 
 `window.AmazonLoginPlugin.authorize(Object options, Function success, Function failure)`
 
 Success function returns an Object like:
 
+```
 	{
 		accessToken: "...",
-		user: {
+		user: 
+    {
       name: "Full Name",
       email: "email@example.com",
       user_id: "63456543...",
       postal_code: "123..."
 		}
 	}
+```
 
 **Some of these fields may not appear depending on the scope of the profile requested.**
 
@@ -125,26 +134,48 @@ Failure function returns an error String.
 
 ### FetchUserProfile
 
-TBD
-
-### Get Token
-
-`window.AmazonLoginPlugin.getToken(Object options, Function success, Function failure)`
+Retrieve previously auth'ed profile information.
 
 Success function returns an Object like:
 
+```
 	{
 		accessToken: "...",
-		authorizationCode: "...",
-		clientId: "...",
-		redirectURI: "https://...",
-		user: {
+		user: 
+    {
       name: "Full Name",
       email: "email@example.com",
       user_id: "63456543...",
       postal_code: "123..."
 		}
 	}
+```
+
+**Some of these fields may not appear depending on the scope of the profile requested.**
+
+Failure function returns an error String.
+
+
+### Get Token
+
+Invoke with the following options:
+
+```
+  var USERID = 0x00010;
+  var options = {
+    scopeFlag: USERID,
+	}
+```
+
+`window.AmazonLoginPlugin.getToken(Object options, Function success, Function failure)`
+
+Success function returns an Object like:
+
+```
+	{
+		accessToken: "..."
+	}
+```
 
 **Some of these fields may not appear depending on the scope of the profile requested.**
 
@@ -155,23 +186,27 @@ Failure function returns an error String.
 
 `window.AmazonLoginPlugin.signOut(Function success, Function failure)`
 
+**Android devices without Amazon Shopping App will leave a session of the Chrome browser still lingering and it would be advised to manage that if you are concerned about user security.**
 
 ### Authorize Device
 
 Invoke with the following options:
 
+```
   var ALEXA_PRE_AUTH = 0x00001;
-	{
+  var options = {
     scopeFlag: ALEXA_PRE_AUTH,
 		productID: "MyDeviceModel",
 		productDSN: "SerialNum232...",
 		codeChallenge: "2B34E2F342..."
 	}
+```
 
 `window.AmazonLoginPlugin.authorizeDevice(Object options, Function success, Function failure)`
 
 Success function returns an Object like:
 
+```
 	{
 		accessToken: "...",
 		authorizationCode: "...",
@@ -184,6 +219,7 @@ Success function returns an Object like:
       postal_code: "123..."
 		}
 	}
+```
 
 **Some of these fields may not appear depending on the scope of the profile requested.**
 
@@ -206,18 +242,22 @@ Please only detect for one app at a time.
 
 Invoke with these options:
 
-var APPS_SHOPPING = 0x00001;
-{
-  appsFlag: APPS_SHOPPING,
-  appLaunch: true
-}
+```
+  var APPS_SHOPPING = 0x00001;
+  var options = {
+    appsFlag: APPS_SHOPPING,
+    appLaunch: true
+  }
+```
 
 `window.AmazonLoginPlugin.appExists(Object options, Function success, Function failure)`
 
 Success function returns an Object like:
 
+```
 	{
 		appName: "com.amazon..."
 	}
+```
 
 Failure function returns an error String.
