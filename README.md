@@ -22,6 +22,8 @@ iOS support is still experimental.
  
 ## Prerequisites
 
+Last tested to work with 3.0 libraries from the Amazon Mobile App SDK (Jan 2018).
+
 ### Android
 
 - Download the [Amazon Mobile App SDK](https://developer.amazon.com/public/resources/development-tools/sdk)  and extract the files to a directory on your hard drive.
@@ -112,7 +114,7 @@ var options = {
 
 `window.AmazonLoginPlugin.authorize(Object options, Function success, Function failure)`
 
-Success function returns an Object like:
+Success function returns an object like:
 
 ```
 {
@@ -132,11 +134,13 @@ Success function returns an Object like:
 Failure function returns an error String.
 
 
-### FetchUserProfile
+### Fetch User Profile
 
 Retrieve previously auth'ed profile information.
 
-Success function returns an Object like:
+`window.AmazonLoginPlugin.fetchUserProfile(Function success, Function failure)`
+
+Success function returns an object like:
 
 ```
 {
@@ -169,7 +173,7 @@ var options = {
 
 `window.AmazonLoginPlugin.getToken(Object options, Function success, Function failure)`
 
-Success function returns an Object like:
+Success function returns an object like:
 
 ```
 {
@@ -186,7 +190,7 @@ Failure function returns an error String.
 
 `window.AmazonLoginPlugin.signOut(Function success, Function failure)`
 
-**Android devices without Amazon Shopping App will leave a session of the Chrome browser still lingering and it would be advised to manage that if you are concerned about user security.**
+**Android devices without the Amazon Shopping App will leave a session of the Chrome browser still lingering and it would be advised to manage that if you are concerned about user security.**
 
 ### Authorize Device
 
@@ -204,7 +208,7 @@ var options = {
 
 `window.AmazonLoginPlugin.authorizeDevice(Object options, Function success, Function failure)`
 
-Success function returns an Object like:
+Success function returns an object like:
 
 ```
 {
@@ -256,7 +260,7 @@ If the app was not detected a null object would be returned.
 
 `window.AmazonLoginPlugin.appExists(Object options, Function success, Function failure)`
 
-Success function returns an Object like:
+Success function returns an object like:
 
 ```
 {
