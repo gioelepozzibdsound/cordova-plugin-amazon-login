@@ -3,13 +3,13 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-amazon-login"
-        version="2.0.0">
-    <name>Login with Amazon Plugin</name>
-    <description>A Cordova Plugin for Login with Amazon. Use your Amazon account to authenticate with the app.</description>
+        version="2.0.4">
+    <name>Login with Amazon</name>
+    <description>A Cordova Plugin for Login with Amazon.
+    Use your Amazon account to authenticate with the app.
+    Also supports Companion App APIs for registration of AVS devices.</description>
     <license>MIT</license>
-    <keywords>Amazon, Amazon Login, Login, OAuth, Identity, Authentication</keywords>
-    <repo>https://github.com/edu-com/cordova-plugin-amazon-login.git</repo>
-    <issue>https://github.com/edu-com/cordova-plugin-amazon-login/issues</issue>
+    <keywords>Amazon, Amazon Login, Login, OAuth, Identity, Companion App, Authentication</keywords>
 
     <js-module src="www/plugin.js" name="plugin">
         <clobbers target="AmazonLoginPlugin"/>
@@ -17,9 +17,12 @@
 
     <!-- android -->
     <platform name="android">
+        <!-- Need to include this for android.support.v4.app.Fragment not found problem -->
+        <framework src="com.android.support:support-v4:23.+" />
+        
         <config-file parent="/*" target="res/xml/config.xml" >
             <feature name="AmazonLoginPlugin">
-                <param name="android-package" value="com.education.AmazonLoginPlugin"/>
+                <param name="android-package" value="org.apache.cordova.lwa.AmazonLoginPlugin"/>
                 <param name="onload" value="true"/>
             </feature>
         </config-file>
@@ -44,8 +47,11 @@
             </activity>
         </config-file>
 
-        <source-file src="src/android/AmazonLoginPlugin.java" target-dir="src/com/education"/>
-        <framework src="src/android/build-extras.gradle" custom="true" type="gradleReference" />
+        <!-- Go download Amazon's Android SDK and extract the:
+         Amazon-Android-SDKs\LoginWithAmazon\login-with-amazon-sdk.jar to lib folder -->
+        <source-file src="libs/login-with-amazon-sdk.jar" target-dir="libs" />
+
+        <source-file src="src/android/AmazonLoginPlugin.java" target-dir="src/org/apache/cordova/lwa"/>
         <hook type="after_prepare" src="scripts/android/after_prepare.js"/>
     </platform>
 
@@ -65,12 +71,15 @@
 
         <framework src="SafariServices.framework" weak="true"/>
         <framework src="Security.framework" weak="true"/>
+        <framework src="libs/LoginWithAmazon.framework" custom="true" embed="true"/>
 
         <preference name="IOS_API_KEY"/>
 
         <config-file target="*-Info.plist" parent="APIKey">
             <string>$IOS_API_KEY</string>
         </config-file>
+        
+        <hook type="after_prepare" src="scripts/ios/after_prepare.js"/>
     </platform>
 
 </plugin>

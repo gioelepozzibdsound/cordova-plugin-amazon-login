@@ -16,7 +16,7 @@ APIs for device registration.
 Support for hosted splash screen via the new ALEXA_PRE_AUTH flag is also included.
 
 Extra Android only helper function to check for various Amazon App presence.
-This is to provide support to launch the Alexa App if present instead of linking to the Play Store as per Amazon's UX requirements. 
+This is to provide support to launch the Alexa App if it is present instead of linking to the Play Store as per Amazon's UX requirements. 
 
 iOS support is still experimental.
  
@@ -63,7 +63,7 @@ In order to use API key from `release` section set your environment to build `re
 - Under Search Paths, ensure that the LoginWithAmazon.framework directory is in the Framework Search Paths. For example:
 - In the main menu, click Product and select Build. The build should complete successfully.
 - [Add a URL Scheme to Your App Property List](https://developer.amazon.com/public/apis/engage/login-with-amazon/docs/create_ios_project.html#add_url_scheme) 
-- Get Amazon API key for your iOS app
+- Get Amazon API key for your iOS app. There is only one key for iOS.
  
  
 ## Installation
@@ -83,31 +83,31 @@ cordova plugin add https://github.com/innomediahho/cordova-plugin-amazon-login -
 Perform an OAuth with Amazon based on the invocation profile desired.
 Some profile scopes cannot be mixed.
 
-| Type of Profiles        |   Enum  |
-| :---------------------- | ------: |
-| None                    | 0x00000 |
-| Alexa Pre-Auth          | 0x00001 |
-| UserId                  | 0x00010 |
-| Profile                 | 0x00020 |
-| Postal code             | 0x00040 |
-| Alexa Skills Read       | 0x00100 |
-| Alexa Skills Read/Write | 0x00200 |
-| Alexa Skills Test       | 0x00800 |
-| Alexa Models Read       | 0x01000 |
-| Alexa Models Read/Write | 0x02000 |
-| Dash replenish (expern) | 0x10000 |
+| Type of Profiles              |   Enum  |
+| :---------------------------- | ------: |
+| None                          | 0x00000 |
+| Alexa Pre-Auth                | 0x00001 |
+| UserId                        | 0x00010 |
+| Profile                       | 0x00020 |
+| Postal code                   | 0x00040 |
+| Alexa Skills Read             | 0x00100 |
+| Alexa Skills Read/Write       | 0x00200 |
+| Alexa Skills Test             | 0x00800 |
+| Alexa Models Read             | 0x01000 |
+| Alexa Models Read/Write       | 0x02000 |
+| Dash replenish (experimental) | 0x10000 |
 
 **Alexa Pre-Auth flag will invoke the hosted splash screen during the Companion App registration which is the new Amazon requirement.**
 
 Invoke with the following options:
 
 ```
-  var USERID = 0x00010;
-  var PROFILE = 0x00020;
-  var POSTAL_CODE = 0x00040;
-  var options = {
-    scopeFlag: USERID | PROFILE | POSTAL_CODE,
-	}
+var USERID = 0x00010;
+var PROFILE = 0x00020;
+var POSTAL_CODE = 0x00040;
+var options = {
+  scopeFlag: USERID | PROFILE | POSTAL_CODE,
+}
 ```
 
 `window.AmazonLoginPlugin.authorize(Object options, Function success, Function failure)`
@@ -115,16 +115,16 @@ Invoke with the following options:
 Success function returns an Object like:
 
 ```
-	{
-		accessToken: "...",
-		user: 
-    {
-      name: "Full Name",
-      email: "email@example.com",
-      user_id: "63456543...",
-      postal_code: "123..."
-		}
-	}
+{
+  accessToken: "...",
+  user: 
+  {
+    name: "Full Name",
+    email: "email@example.com",
+    user_id: "63456543...",
+    postal_code: "123..."
+  }
+}
 ```
 
 **Some of these fields may not appear depending on the scope of the profile requested.**
@@ -139,16 +139,16 @@ Retrieve previously auth'ed profile information.
 Success function returns an Object like:
 
 ```
-	{
-		accessToken: "...",
-		user: 
-    {
-      name: "Full Name",
-      email: "email@example.com",
-      user_id: "63456543...",
-      postal_code: "123..."
-		}
-	}
+{
+  accessToken: "...",
+  user: 
+  {
+    name: "Full Name",
+    email: "email@example.com",
+    user_id: "63456543...",
+    postal_code: "123..."
+  }
+}
 ```
 
 **Some of these fields may not appear depending on the scope of the profile requested.**
@@ -161,10 +161,10 @@ Failure function returns an error String.
 Invoke with the following options:
 
 ```
-  var USERID = 0x00010;
-  var options = {
-    scopeFlag: USERID,
-	}
+var USERID = 0x00010;
+var options = {
+  scopeFlag: USERID,
+}
 ```
 
 `window.AmazonLoginPlugin.getToken(Object options, Function success, Function failure)`
@@ -172,9 +172,9 @@ Invoke with the following options:
 Success function returns an Object like:
 
 ```
-	{
-		accessToken: "..."
-	}
+{
+  accessToken: "..."
+}
 ```
 
 **Some of these fields may not appear depending on the scope of the profile requested.**
@@ -193,13 +193,13 @@ Failure function returns an error String.
 Invoke with the following options:
 
 ```
-  var ALEXA_PRE_AUTH = 0x00001;
-  var options = {
-    scopeFlag: ALEXA_PRE_AUTH,
-		productID: "MyDeviceModel",
-		productDSN: "SerialNum232...",
-		codeChallenge: "2B34E2F342..."
-	}
+var ALEXA_PRE_AUTH = 0x00001;
+var options = {
+  scopeFlag: ALEXA_PRE_AUTH,
+  productID: "MyDeviceModel",
+  productDSN: "SerialNum232...",
+  codeChallenge: "2B34E2F342..."
+}
 ```
 
 `window.AmazonLoginPlugin.authorizeDevice(Object options, Function success, Function failure)`
@@ -207,18 +207,18 @@ Invoke with the following options:
 Success function returns an Object like:
 
 ```
-	{
-		accessToken: "...",
-		authorizationCode: "...",
-		clientId: "...",
-		redirectURI: "https://...",
-		user: {
-      name: "Full Name",
-      email: "email@example.com",
-      user_id: "63456543...",
-      postal_code: "123..."
-		}
-	}
+{
+  accessToken: "...",
+  authorizationCode: "...",
+  clientId: "...",
+  redirectURI: "https://...",
+  user: {
+    name: "Full Name",
+    email: "email@example.com",
+    user_id: "63456543...",
+    postal_code: "123..."
+  }
+}
 ```
 
 **Some of these fields may not appear depending on the scope of the profile requested.**
@@ -243,11 +243,11 @@ Please only detect for one app at a time.
 Invoke with these options:
 
 ```
-  var APPS_SHOPPING = 0x00001;
-  var options = {
-    appsFlag: APPS_SHOPPING,
-    appLaunch: true
-  }
+var APPS_SHOPPING = 0x00001;
+var options = {
+  appsFlag: APPS_SHOPPING,
+  appLaunch: true
+}
 ```
 
 `window.AmazonLoginPlugin.appExists(Object options, Function success, Function failure)`
@@ -255,9 +255,9 @@ Invoke with these options:
 Success function returns an Object like:
 
 ```
-	{
-		appName: "com.amazon..."
-	}
+{
+  appName: "com.amazon..."
+}
 ```
 
 Failure function returns an error String.

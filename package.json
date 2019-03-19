@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-amazon-login",
-  "version": "2.0.0",
+  "version": "2.0.4",
   "cordova": {
     "id": "cordova-plugin-amazon-login",
     "platforms": [
@@ -8,14 +8,20 @@
       "ios"
     ]
   },
+  "author": "Denis Uraganov, Howard Ho",
+  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/edu-com/cordova-plugin-amazon-login"
+    "url": "https://github.com/innomediahho/cordova-plugin-amazon-login"
   },
   "bugs": {
-    "url": "https://github.com/edu-com/cordova-plugin-amazon-login/issues"
+    "url": "https://github.com/innomediahho/cordova-plugin-amazon-login/issues"
   },
-  "description": "A Cordova Plugin for Login with Amazon. Use your Amazon account to authenticate with the app.",
+  "devDependencies": {
+    "dotenv": "~5.0.1",
+    "plist": "~3.0.1"
+  },
+  "description": "A Cordova Plugin for Login with Amazon. Use your Amazon account to authenticate with the app. Also supports Companion App APIs for registration of AVS devices.",
   "keywords": [
     "Amazon",
     "Amazon SignIn",
@@ -25,9 +31,11 @@
     "Login with Amazon",
     "Login",
     "OAuth",
+    "Companion App"
     "Identity",
     "Authentication",
     "ecosystem:cordova",
+    "cordova",
     "cordova-android",
     "cordova-ios"
   ]
