@@ -227,7 +227,7 @@ Success function returns an Object like:
 Failure function returns an error String.
 
 
-### App Exists?
+### Check if an Amazon App exists
 **Only supported on Android!**
 
 Helper function to check if such an Amazon App exists on the phone and launch it if found.
@@ -249,6 +249,10 @@ var options = {
   appLaunch: true
 }
 ```
+
+The appLaunch flag set to `true` will launch the Amazon app if found and do nothing if set to `false`.
+The className of the Amazon app would be returned regardless on if appLaunch was set `true` or `false` if the requested app was found.
+If the app was not detected a null object would be returned. 
 
 `window.AmazonLoginPlugin.appExists(Object options, Function success, Function failure)`
 
