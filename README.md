@@ -3,7 +3,7 @@
 A Cordova Plugin for Login with Amazon. Use your Amazon account to authenticate with the app.
 Also supports Companion App APIs for registration of AVS devices.
 This plugin is a wrapper around native android and iOS libraries developed by Amazon.
-It is advised that you are aware that without having the Amazon Shopping App on the device, on Andreoid, the Amazon libraries will invoke a session of the default browser. Typically this is Chrome which would be fine... however for users with other browsers, such as Firefox, this plugin would break. This is a known issue and stems from how Amazon's libraries work.
+It is advised that you are aware that without having the Amazon Shopping App on the device, on Android, the Amazon libraries will invoke a session of the default browser. Typically this is Chrome which would be fine... however for users with other browsers, such as Firefox, this plugin would break. This is a known issue and stems from how Amazon's libraries work.
 
 Originally from:
 ``
