@@ -78,7 +78,7 @@ cordova plugin add cordova-plugin-amazon-login --variable IOS_API_KEY="your-key-
 cordova plugin add https://github.com/innomediahho/cordova-plugin-amazon-login --variable IOS_API_KEY="your-key-here"
 ```
 
-## API
+## API Reference
 
 ### Authorize
 
@@ -186,7 +186,7 @@ Success function returns an object like:
 Failure function returns an error String.
 
 
-### SignOut
+### Sign Out
 
 `window.AmazonLoginPlugin.signOut(Function success, Function failure)`
 
@@ -231,7 +231,7 @@ Success function returns an object like:
 Failure function returns an error String.
 
 
-### Check if an Amazon App exists
+### (Check if an Amazon) App Exists
 **Only supported on Android!**
 
 Helper function to check if such an Amazon App exists on the phone and launch it if found.
