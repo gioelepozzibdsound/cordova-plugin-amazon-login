@@ -68,10 +68,10 @@
 
         <header-file src="src/ios/AmazonLoginPlugin.h"/>
         <source-file src="src/ios/AmazonLoginPlugin.m"/>
-
+        <source-file src="libs/LoginWithAmazon.framework" target-dir="lib" framework="true" />
+        <framework src="libs/LoginWithAmazon.framework" custom="true" embed="true"/>
         <framework src="SafariServices.framework" weak="true"/>
         <framework src="Security.framework" weak="true"/>
-        <framework src="libs/LoginWithAmazon.framework" custom="true" embed="true"/>
 
         <preference name="IOS_API_KEY"/>
 
