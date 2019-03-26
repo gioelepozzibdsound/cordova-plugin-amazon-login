@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-amazon-login"
-        version="2.0.17">
+        version="2.0.18">
     <name>Login with Amazon</name>
     <description>A Cordova Plugin for Login with Amazon.
     Use your Amazon account to authenticate with the app.
@@ -68,8 +68,8 @@
 
         <header-file src="src/ios/AmazonLoginPlugin.h"/>
         <source-file src="src/ios/AmazonLoginPlugin.m"/>
-        <source-file src="libs/LoginWithAmazon.framework" target-dir="lib" framework="true" />
-        <framework src="libs/LoginWithAmazon.framework" custom="true" embed="true"/>
+        <source-file src="libs/LoginWithAmazon.framework" target-dir="libs" framework="true" />
+        <!-- framework src="libs/LoginWithAmazon.framework" custom="true" embed="true"/ -->
         <framework src="SafariServices.framework" weak="true"/>
         <framework src="Security.framework" weak="true"/>
 
