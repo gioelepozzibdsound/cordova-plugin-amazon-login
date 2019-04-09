@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-amazon-login"
-        version="2.0.19">
+        version="2.0.20">
     <name>Login with Amazon</name>
     <description>A Cordova Plugin for Login with Amazon.
     Use your Amazon account to authenticate with the app.
