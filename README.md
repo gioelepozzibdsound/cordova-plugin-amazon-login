@@ -274,15 +274,16 @@ Failure function returns an error String.
 
 For those who are using VisualStudio 2017 TACO and building on a remote Mac with their Amazon libraries on their Windows workstations, then you might like to add the following script and Cordova hook to help bring the necessary bits across to the other end.
 
-In your config.xml add a reference to the script:
+In your config.xml add a reference to the before-build script:
 
 ```
     <platform name="ios">
         <hook src="path/to/script/below/before-build.js" type="before_build" />
+        ...
     </platform>
 ```
 
-And the script for your the after-build hook:
+And the `before-build.js` script for your before-build hook above:
 
 ```
 #!/usr/bin/env node
