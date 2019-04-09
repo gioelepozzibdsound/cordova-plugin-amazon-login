@@ -269,3 +269,50 @@ Success function returns an object like:
 ```
 
 Failure function returns an error String.
+
+## Extras
+
+For those who are using VisualStudio 2017 TACO and building on a remote Mac with their Amazon libraries on their Windows workstations, then you might like to add the following script and Cordova hook to help bring the necessary bits across to the other end.
+
+In your config.xml add a reference to the script:
+
+```
+    <platform name="ios">
+        <hook src="path/to/script/below/before-build.js" type="before_build" />
+    </platform>
+```
+
+And the script for your the after-build hook:
+
+```
+#!/usr/bin/env node
+'use strict';
+const fs = require('fs-extra');
+
+module.exports = function (context) {
+    // Ensure we are in an iOS build
+    if (context.opts.cordova.platforms.indexOf('ios') !== -1) {        
+        var cordovaUtil = context.requireCordovaModule('cordova-lib/src/cordova/util');
+        var ConfigParser = context.requireCordovaModule('cordova-lib/src/configparser/ConfigParser');
+        var projectRoot = cordovaUtil.isCordova();
+        var xml = cordovaUtil.projectConfig(projectRoot);
+        var cfg = new ConfigParser(xml);
+        var appName = cfg.name();
+
+        // Customize with the location of your LoginWithAmazon.framework path here:
+        var pluginPath = 'plugins/cordova-plugin-amazon-login/libs/LoginWithAmazon.framework';
+
+        // The location of where Xcode wants to have (capital P for Plugins) the LoginWithAmazon.framework:
+        var iosPath = 'platforms/ios/' + appName + '/Plugins/cordova-plugin-amazon-login/LoginWithAmazon.framework';
+
+        // Copy source folder to where Xcode wants the framework to be
+        fs.copy(pluginPath, iosPath, function (err) {
+            if (err) {
+                console.log('An error occured while copying the framework.');
+                return console.error(err);
+            }
+            console.log('LoginWithAmazon.framework copy completed!');
+        });
+    }
+};
+```
