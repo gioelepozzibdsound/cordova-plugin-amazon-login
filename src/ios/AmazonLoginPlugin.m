@@ -45,13 +45,63 @@ typedef enum
             openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
 
     NSLog(@"AmazonLoginPlugin Plugin handle openURL");
-    return [AMZNAuthorizationManager handleOpenURL:url
-                                 sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey]];
+    BOOL handled =[AMZNAuthorizationManager handleOpenURL:url
+        sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey] ];
+    NSLog(@"AmazonLoginPlugin handled was %s", handled ? "true" : "false" );
+    // Handle errors caused when user cancels login or skips or backs out unexpectedly
+    if (!handled) {
+        AmazonLoginPlugin *alp = [AmazonLoginPlugin sharedInstance];
+        [alp failedHandler];
+    }
+    return handled;
 }
 
 @end
 
 @implementation AmazonLoginPlugin
+
+// Instance reference to our plugin
+static id sharedInstance;
+// Hold the callbackId for auth requests in the event we fail
+static NSString* callbackId;
+
+// Our plugin is a singelton
++ (instancetype)sharedInstance {
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        sharedInstance = [[self alloc] initPrivate];
+    });
+    return sharedInstance;
+}
+
+- (instancetype)init {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+        reason:@"AmazonLoginPlugin could not init!" userInfo:nil];
+}
+
+- (instancetype)initPrivate {
+    if (self = [super init]) {
+        //TODO: Do other init...
+    }
+    return self;
+}
+
+- (void)failedHandler
+{
+    // Handle errors caused when user cancels login.
+    NSLog(@"AmazonLoginPlugin did not complete");
+    if (callbackId) {
+        NSString* payload = @"handler did not complete perhaps skipped";
+        CDVPluginResult* pluginResult = [CDVPluginResult
+            resultWithStatus:CDVCommandStatus_ERROR messageAsString:payload];
+        
+        // The sendPluginResult method is thread-safe.
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
+    } else {
+        NSLog(@"callbackId was invalid could not send the failure");
+    }
+}
+
 
 - (NSArray *)computeScopes:(NSNumber *)flag {
     long lFlag = [flag unsignedLongLongValue];
@@ -103,6 +153,7 @@ typedef enum
 
 - (void)authorizeDevice:(CDVInvokedUrlCommand *)command {
     NSLog(@"AmazonLoginPlugin authorizeDevice is work in progress...");
+    callbackId = command.callbackId;
 
     NSDictionary* options = [command argumentAtIndex:0];
     if ([options isKindOfClass:[NSNull class]]) {
@@ -174,6 +225,7 @@ typedef enum
 
 - (void)authorize:(CDVInvokedUrlCommand *)command {
     NSLog(@"AmazonLoginPlugin authorize request started");
+    callbackId = command.callbackId;
 
     NSDictionary* options = [command argumentAtIndex:0];
     if ([options isKindOfClass:[NSNull class]]) {

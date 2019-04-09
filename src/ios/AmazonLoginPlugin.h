@@ -1,9 +1,10 @@
 #import <Cordova/CDVPlugin.h>
 
-@interface AmazonLoginPlugin : CDVPlugin {
-}
+@interface AmazonLoginPlugin : CDVPlugin 
 
++ (id)sharedInstance;
 - (NSArray *)computeScopes:(NSNumber *)flag;
+- (void)failedHandler;
 - (void)authorizeDevice:(CDVInvokedUrlCommand *)command;
 - (void)authorize:(CDVInvokedUrlCommand *)command;
 - (void)fetchUserProfile:(CDVInvokedUrlCommand *)command;
