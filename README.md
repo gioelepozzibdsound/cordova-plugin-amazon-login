@@ -1,4 +1,4 @@
-# cordova-plugin-login-with-amazon
+# cordova-plugin-amazon-login
 
 A Cordova Plugin for Login with Amazon. Use your Amazon account to authenticate with the app.
 Also supports Companion App APIs for registration of AVS devices.
@@ -18,7 +18,7 @@ Support for hosted splash screen via the new ALEXA_PRE_AUTH flag is also include
 Extra Android only helper function to check for various Amazon App presence.
 This is to provide support to launch the Alexa App if it is present instead of linking to the Play Store as per Amazon's UX requirements. 
 
-iOS support is still experimental.
+iOS works but is still kind of experimental.
  
 ## Prerequisites
 
@@ -49,7 +49,6 @@ For example, your `build.json` might look like this:
 },
 ```
 
-
 By default, the value of API key from `debug` section will be used.
 This plugin uses [dotenv](https://www.npmjs.com/package/dotenv) to determine if you are building for `release` or `debug`.
 In order to use API key from `release` section set your environment to build `release`.
@@ -73,7 +72,9 @@ In order to use API key from `release` section set your environment to build `re
 ```
 cordova plugin add cordova-plugin-amazon-login --variable IOS_API_KEY="your-key-here"
 ```
-(soon) Or
+
+Or
+
 ```
 cordova plugin add https://github.com/innomediahho/cordova-plugin-amazon-login --variable IOS_API_KEY="your-key-here"
 ```
@@ -272,7 +273,7 @@ Failure function returns an error String.
 
 ## Extras
 
-For those who are using VisualStudio 2017 TACO and building on a remote Mac with their Amazon libraries on their Windows workstations, then you might like to add the following script and Cordova hook to help bring the necessary bits across to the other end.
+For those who are using VisualStudio 2017 TACO and building on a remote Mac with their Amazon libraries on their Windows computers, you might like to add the following script and Cordova hook to help bring the necessary bits across to the other end.
 
 In your config.xml add a reference to the before-build script:
 
