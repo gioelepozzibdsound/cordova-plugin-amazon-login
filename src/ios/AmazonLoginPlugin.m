@@ -30,6 +30,7 @@ typedef enum
 } PluginProfiles;
 // Untested scope for Amazon Dash
 
+#define PluginNotificationName        @"AmazonLoginPluginNotification"
 #define PluginCodeChallengeMethod     @"S256"
 
 #define PluginFieldAccessToken        @"accessToken"
@@ -44,14 +45,14 @@ typedef enum
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
 
-    NSLog(@"AmazonLoginPlugin Plugin handle openURL");
+    NSLog(@"AmazonLoginPlugin handle openURL");
     BOOL handled =[AMZNAuthorizationManager handleOpenURL:url
         sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey] ];
+
     NSLog(@"AmazonLoginPlugin handled was %s", handled ? "true" : "false" );
     // Handle errors caused when user cancels login or skips or backs out unexpectedly
     if (!handled) {
-        AmazonLoginPlugin *alp = [AmazonLoginPlugin sharedInstance];
-        [alp failedHandler];
+        [[NSNotificationCenter defaultCenter] postNotificationName:PluginNotificationName object:nil];
     }
     return handled;
 }
@@ -62,8 +63,13 @@ typedef enum
 
 // Instance reference to our plugin
 static id sharedInstance;
-// Hold the callbackId for auth requests in the event we fail
-static NSString* callbackId;
+
+- (void)dealloc {
+    // If you don't remove yourself as an observer, the Notification Center
+    // will continue to try and send notification objects to the deallocated
+    // object.
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 // Our plugin is a singelton
 + (instancetype)sharedInstance {
@@ -81,12 +87,15 @@ static NSString* callbackId;
 
 - (instancetype)initPrivate {
     if (self = [super init]) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveTestNotification:)
+                                                     name:PluginNotificationName
+                                                   object:nil];
         //TODO: Do other init...
     }
     return self;
 }
 
-- (void)failedHandler
+- (void)failedHandler:(NSString *)callbackId
 {
     // Handle errors caused when user cancels login.
     NSLog(@"AmazonLoginPlugin did not complete");
@@ -153,7 +162,15 @@ static NSString* callbackId;
 
 - (void)authorizeDevice:(CDVInvokedUrlCommand *)command {
     NSLog(@"AmazonLoginPlugin authorizeDevice is work in progress...");
-    callbackId = command.callbackId;
+
+    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+    [[NSNotificationCenter defaultCenter]
+     addObserverForName:PluginNotificationName
+     object:nil
+     queue:mainQueue
+     usingBlock:^(NSNotification *notification) {
+         [self failedHandler:command.callbackId];
+     }];
 
     NSDictionary* options = [command argumentAtIndex:0];
     if ([options isKindOfClass:[NSNull class]]) {
@@ -225,7 +242,15 @@ static NSString* callbackId;
 
 - (void)authorize:(CDVInvokedUrlCommand *)command {
     NSLog(@"AmazonLoginPlugin authorize request started");
-    callbackId = command.callbackId;
+
+    NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+    [[NSNotificationCenter defaultCenter]
+     addObserverForName:PluginNotificationName
+     object:nil
+     queue:mainQueue
+     usingBlock:^(NSNotification *notification) {
+         [self failedHandler:command.callbackId];
+     }];
 
     NSDictionary* options = [command argumentAtIndex:0];
     if ([options isKindOfClass:[NSNull class]]) {

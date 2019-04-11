@@ -4,7 +4,7 @@
 
 + (id)sharedInstance;
 - (NSArray *)computeScopes:(NSNumber *)flag;
-- (void)failedHandler;
+- (void)failedHandler:(NSString *)callbackId;
 - (void)authorizeDevice:(CDVInvokedUrlCommand *)command;
 - (void)authorize:(CDVInvokedUrlCommand *)command;
 - (void)fetchUserProfile:(CDVInvokedUrlCommand *)command;
