@@ -53,6 +53,7 @@
 
         <source-file src="src/android/AmazonLoginPlugin.java" target-dir="src/org/apache/cordova/lwa"/>
         <hook type="after_prepare" src="scripts/android/after_prepare.js"/>
+        <hook type="after_plugin_install" src="scripts/android/after_prepare.js"/>
     </platform>
 
     <!-- ios -->
