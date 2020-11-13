@@ -1,9 +1,13 @@
-#!/usr/bin/env node
-'use strict';
 var fs = require('fs');
 var dotenv = require('dotenv');
 var apikeyPath = 'build.json';
-var filename = "platforms/android/assets/api_key.txt";
+
+var assetsPath = 'platforms/android/assets';
+// Assets folder changed in Cordova 7+
+if (!fs.existsSync(assetsPath)) {
+  assetsPath = 'platforms/android/app/src/main/assets';
+}
+var filename = assetsPath + '/api_key.txt';
 
 // If no target enviroment then load it from dotenv
 if (process.env.NODE_ENV == 'undefined' || !process.env.NODE_ENV) {
