@@ -3,6 +3,7 @@
 var fs    = require('fs');     // nodejs.org/api/fs.html
 var path  = require('path');
 var plist = require('plist');  // www.npmjs.com/package/plist
+var elTree = require('elementtree');
 
 module.exports = function (context) {
      // This script is only for iOS
@@ -11,7 +12,7 @@ module.exports = function (context) {
     }
     // Read from config.xml to get bundle id
     var configXml = path.join(context.opts.projectRoot, 'config.xml');
-    var elTree = context.requireCordovaModule('elementtree');
+    // var elTree = context.requireCordovaModule('elementtree');
 
     var data = fs.readFileSync(configXml, 'utf8').toString();
     // Cleanze BOM if exists

@@ -38,7 +38,9 @@ typedef enum
 #define PluginFieldUser               @"user"
 #define PluginFieldClientId           @"clientId"
 #define PluginFieldRedirectUri        @"redirectURI"
-#define PluginFieldAppName            @"appName"
+
+#define PluginAmazonShoppingLink      @"com.amazon.mobile.shopping://www.amazon.com/products/"
+#define PluginAmazonAlexaLink         @"alexa://"
 
 @implementation AppDelegate (AmazonLogin)
 
@@ -430,7 +432,7 @@ static id sharedInstance;
 }
 
 - (void)appExists:(CDVInvokedUrlCommand *)command {
-    //NSLog(@"AmazonLoginPlugin appExists");
+    NSLog(@"AmazonLoginPlugin appExists?");
 
     NSDictionary* options = [command argumentAtIndex:0];
     if ([options isKindOfClass:[NSNull class]]) {
@@ -440,11 +442,33 @@ static id sharedInstance;
     long lFlag = [appsFlag unsignedLongLongValue];
     NSLog(@"appsFlags: " @"0x%lx", lFlag);
 
-    NSDictionary *dictionary = @{
-                                 PluginFieldAppName: @"NotImplementedYet"
-                                 };
+    BOOL bLaunch = NO;
+    if ([options objectForKey:@"appLaunch"]) {
+        bLaunch = [[options objectForKey:@"appLaunch"] boolValue];
+    }
 
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dictionary];
+    BOOL bExists = NO;
+    if ((lFlag & PluginAppsShopping) != 0) {
+        // Check whether Shopping app is installed or not
+        if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:PluginAmazonShoppingLink]]) {
+            bExists = YES;
+            NSLog(@"Amazon Shopping app exists");
+            if (bLaunch) {
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:PluginAmazonShoppingLink]];
+            }
+        }
+    }
+    if ((lFlag & PluginAppsAlexa) != 0) {
+        // Check whether Alexa app is installed or not
+        if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:PluginAmazonAlexaLink]]) {
+            bExists = YES;
+            NSLog(@"Amazon Alexa app exists");
+            if (bLaunch) {
+                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:PluginAmazonAlexaLink]];
+            }
+        }
+    }
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:bExists];
 
     // The sendPluginResult method is thread-safe.
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];

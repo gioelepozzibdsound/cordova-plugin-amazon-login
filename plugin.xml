@@ -3,7 +3,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         id="cordova-plugin-amazon-login"
-        version="2.0.24">
+        version="2.0.26">
     <name>Login with Amazon</name>
     <description>A Cordova Plugin for Login with Amazon.
     Use your Amazon account to authenticate with the app.
@@ -79,6 +79,13 @@
             <string>$IOS_API_KEY</string>
         </config-file>
         
+        <config-file target="*-Info.plist" parent="LSApplicationQueriesSchemes">
+            <array>
+                <string>alexa</string>
+                <string>com.amazon.mobile.shopping</string>
+            </array>
+        </config-file>
+
         <hook type="after_prepare" src="scripts/ios/after_prepare.js"/>
     </platform>
 
