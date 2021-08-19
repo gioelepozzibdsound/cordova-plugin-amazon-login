@@ -22,7 +22,7 @@ iOS works but is still kind of experimental.
  
 ## Prerequisites
 
-Last tested to work with 3.0 libraries from the Amazon Mobile App SDK (Jan 2018).
+Updated to support 3.1.x component from the Amazon Mobile App SDK (Apr 2020). iOS now requires minimum 3.1.0 due to changes in AI to AMNLWA prefix.
 
 ### Android
 
@@ -233,7 +233,6 @@ Failure function returns an error String.
 
 
 ### (Check if an Amazon) App Exists
-**Only supported on Android!**
 
 Helper function to check if such an Amazon App exists on the phone and launch it if found.
 
@@ -261,7 +260,7 @@ If the app was not detected a null object would be returned.
 
 `window.AmazonLoginPlugin.appExists(Object options, Function success, Function failure)`
 
-Success function returns an object like:
+On Android, success function returns an object like:
 
 ```
 {
@@ -271,9 +270,11 @@ Success function returns an object like:
 
 Failure function returns an error String.
 
+On iOS, it returns YES or NO depending if it was able to locate the app.
+
 ## Extras
 
-For those who are using VisualStudio 2017 TACO and building on a remote Mac with their Amazon libraries on their Windows computers, you might like to add the following script and Cordova hook to help bring the necessary bits across to the other end.
+For those who are using VisualStudio 2017 TACO (still?!) and building on a remote Mac with their Amazon libraries on their Windows computers, you might like to add the following script and Cordova hook to help build the necessary bits. Below is an updated script that may help you out...
 
 In your config.xml add a reference to the before-build script:
 
@@ -287,15 +288,58 @@ In your config.xml add a reference to the before-build script:
 And the `before-build.js` script for your before-build hook above:
 
 ```
-#!/usr/bin/env node
-'use strict';
 const fs = require('fs-extra');
+const path = require('path');
 
 module.exports = function (context) {
+    var copyBridgeHeaderId = 0;
+    var copyBridgeHeaderLock = 0;
+    var copyBridgeHeaderSource;
+    var copyBridgeHeaderTarget;
+    const copyBridgeHeaderFn = function () {
+        process.stdout.write('.');
+        if (!copyBridgeHeaderLock) {
+            fs.open(copyBridgeHeaderTarget, 'w+', function (err, fd) {
+                if (err) { // && err.code === 'EBUSY'
+                    //do nothing till next loop
+                    process.stdout.write(err.code);
+                } else {
+                    process.stdout.write('!');
+                    fs.closeSync(fd);
+                    process.stdout.write('.:.');
+                    if (!copyBridgeHeaderLock) {
+                        process.stdout.write('.,.');
+                        copyBridgeHeaderLock = 1;
+                        process.stdout.write('.*.');
+                        fs.copy(copyBridgeHeaderSource, copyBridgeHeaderTarget, function (err) {
+                            if (err) {
+                                process.stdout.write('.err.');
+                                copyBridgeHeaderLock = 0;
+                                //return console.error(err);
+                            } else {
+                                process.stdout.write('.bridging-header.h copy completed. ');
+                                clearInterval(copyBridgeHeaderId);
+                                copyBridgeHeaderId = 0;
+                                copyBridgeHeaderLock = 0;
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    };
+
     // Ensure we are in an iOS build
     if (context.opts.cordova.platforms.indexOf('ios') !== -1) {        
         var cordovaUtil = context.requireCordovaModule('cordova-lib/src/cordova/util');
-        var ConfigParser = context.requireCordovaModule('cordova-lib/src/configparser/ConfigParser');
+        var ConfigParser;
+        try {
+            console.log('before-build: trying to set config parser');
+            ConfigParser = context.requireCordovaModule('cordova-lib/src/ConfigParser/ConfigParser');
+        } catch (ex) {
+            console.log('before-build: failed to set so using alternate');
+            ConfigParser = context.requireCordovaModule('cordova-common/src/ConfigParser/ConfigParser');
+        }
         var projectRoot = cordovaUtil.isCordova();
         var xml = cordovaUtil.projectConfig(projectRoot);
         var cfg = new ConfigParser(xml);
@@ -305,15 +349,15 @@ module.exports = function (context) {
         var pluginPath = 'plugins/cordova-plugin-amazon-login/libs/LoginWithAmazon.framework';
 
         // The location of where Xcode wants to have (capital P for Plugins) the LoginWithAmazon.framework:
-        var iosPath = 'platforms/ios/' + appName + '/Plugins/cordova-plugin-amazon-login/LoginWithAmazon.framework';
+        var iosPath = path.join('platforms/ios/', appName, '/Plugins/cordova-plugin-amazon-login/LoginWithAmazon.framework');
 
-        // Copy source folder to where Xcode wants the framework to be
+        // copy source folder to where Xcode wants the framework to be
         fs.copy(pluginPath, iosPath, function (err) {
             if (err) {
-                console.log('An error occured while copying the framework.');
+                console.log('before-build: error occured while copying the framework.');
                 return console.error(err);
             }
-            console.log('LoginWithAmazon.framework copy completed!');
+            console.log('before-build: LoginWithAmazon.framework copy completed!');
         });
     }
 };

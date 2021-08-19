@@ -275,7 +275,7 @@ static id sharedInstance;
             NSLog(@"AmazonLoginPlugin authorize failed due to an error: " @"%@",error.localizedDescription);
 
             // Handle errors from the SDK or authorization server.
-            if(error.code == kAIApplicationNotAuthorized) {
+            if(error.code == kAMZNLWAApplicationNotAuthorized) {
                 // Show authorize user button.
                 NSLog(@"AmazonLoginPlugin authorize request NotAuthorized");
 
@@ -370,7 +370,7 @@ static id sharedInstance;
                                                           userDidCancel, NSError *error) {
         if (error) {
             // Handle errors from the SDK or authorization server.
-            if(error.code == kAIApplicationNotAuthorized) {
+            if(error.code == kAMZNLWAApplicationNotAuthorized) {
                 // Show authorize user button.
                 NSLog(@"AmazonLoginPlugin authorize request NotAuthorized");
 
