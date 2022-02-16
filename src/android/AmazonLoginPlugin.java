@@ -52,6 +52,9 @@ public class AmazonLoginPlugin extends CordovaPlugin {
     private static final int PROFILE_ALEXA_SKILLS_TEST  = 0x00800;
     private static final int PROFILE_ALEXA_MODELS_R     = 0x01000;
     private static final int PROFILE_ALEXA_MODELS_RW    = 0x02000;
+//////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
+    private static final int PROFILE_ALEXA_PRE_AUTH_ASP = 0x03000;
+//////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
     // Untested scope for Amazon Dash
     private static final int PROFILE_DASH_REPLENISH     = 0x10000;
     
@@ -68,6 +71,11 @@ public class AmazonLoginPlugin extends CordovaPlugin {
         
     // New stuff to support AVS Companion App
     private static final String ACTION_AUTHORIZE_DEVICE = "authorizeDevice";
+    
+//////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
+    private static final String ACTION_AUTHORIZE_DEVICE_ASP = "authorizeDevice_ASP";
+//////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
+
 
     private static final String FIELD_ACCESS_TOKEN = "accessToken";
     private static final String FIELD_AUTHORIZATION_CODE = "authorizationCode";
@@ -154,6 +162,12 @@ public class AmazonLoginPlugin extends CordovaPlugin {
             scopes.add(ScopeFactory.scopeNamed("alexa:voice_service:pre_auth"));
             Log.i(TAG, "Profile: alexa pre_auth scope added");
         }
+//////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
+        if ((mScopeFlag & PROFILE_ALEXA_PRE_AUTH_ASP) != 0) {
+            scopes.add(ScopeFactory.scopeNamed("alexa::enterprise::management"));
+            Log.i(TAG, "Profile: alexa models read scope added");
+        }
+//////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
         return scopes.toArray(new Scope[scopes.size()]);
     }
 
@@ -252,7 +266,28 @@ public class AmazonLoginPlugin extends CordovaPlugin {
             } else {
                 Log.i(TAG, "Not authorizing without valid product ID, product DSN or code challenge");
             }
-        } else if (ACTION_AUTHORIZE.equals(action)) {
+        }
+//////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
+        else if (ACTION_AUTHORIZE_DEVICE_ASP.equals(action)) {
+            Log.i(TAG, "Authorization started");
+            Log.i(TAG, "Args: " + mScopeFlag );
+            
+            if (mScopeFlag != PROFILE_NONE) {
+                cordova.getThreadPool().execute(new Runnable() {
+                    public void run() {
+                        AuthorizationManager.authorize(new AuthorizeRequest
+                                .Builder(mRequestContext)
+                                .addScopes(computeScopes(mScopeFlag))
+                                .build());
+                    }
+                });
+            } else {
+                Log.i(TAG, "Not authorizing without valid profile scope");
+            }
+        }
+//////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
+
+        else if (ACTION_AUTHORIZE.equals(action)) {
             Log.i(TAG, "Authorization started");
             Log.i(TAG, "Args: " + mScopeFlag );
             
