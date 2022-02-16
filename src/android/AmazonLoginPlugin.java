@@ -269,20 +269,27 @@ public class AmazonLoginPlugin extends CordovaPlugin {
         }
 //////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
         else if (ACTION_AUTHORIZE_DEVICE_ASP.equals(action)) {
-            Log.i(TAG, "Authorization started");
-            Log.i(TAG, "Args: " + mScopeFlag );
-            
-            if (mScopeFlag != PROFILE_NONE) {
+           Log.i(TAG, "Both Authorization ASP started");
+            Log.i(TAG, "Args: " + mProductID + ", " + mProductDSN + ", " + mCodeChallenge);
+            if (mProductID != null && mProductDSN != null && mCodeChallenge != null) {
+                mIsAuthDevice = true;
+                // Need to get the MAC address (DSN) of the new device from the App
+                // Optionally also provide the product ID?
+                // Also a code challenge from the online service using the challenge method: S256
+
                 cordova.getThreadPool().execute(new Runnable() {
                     public void run() {
                         AuthorizationManager.authorize(new AuthorizeRequest
-                                .Builder(mRequestContext)
-                                .addScopes(computeScopes(mScopeFlag))
-                                .build());
+                            .Builder(mRequestContext)
+                            .addScope(alexaScope(mProductID, mProductDSN))
+                            .addScopes(computeScopes(mScopeFlag))
+                            .forGrantType(AuthorizeRequest.GrantType.AUTHORIZATION_CODE)
+                            .withProofKeyParameters(mCodeChallenge, CODE_CHALLENGE_METHOD)
+                            .build());
                     }
                 });
             } else {
-                Log.i(TAG, "Not authorizing without valid profile scope");
+                Log.i(TAG, "Not authorizing without valid product ID, product DSN or code challenge");
             }
         }
 //////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
