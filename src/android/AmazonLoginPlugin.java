@@ -36,30 +36,30 @@ import com.amazon.identity.auth.device.api.workflow.RequestContext;
 
 public class AmazonLoginPlugin extends CordovaPlugin {
     // Apps to check if exists
-    private static final int APPS_NONE                  = 0x00000;
-    private static final int APPS_SHOPPING              = 0x00001;
-    private static final int APPS_ALEXA                 = 0x00010;
+    private static final int APPS_NONE = 0x00000;
+    private static final int APPS_SHOPPING = 0x00001;
+    private static final int APPS_ALEXA = 0x00010;
 
     // Alexa scopes doc is here:
     // https://developer.amazon.com/docs/smapi/ask-cli-intro.html
-    private static final int PROFILE_NONE               = 0x00000;
-    private static final int PROFILE_ALEXA_PRE_AUTH     = 0x00001;
-    private static final int PROFILE_USERID             = 0x00010;
-    private static final int PROFILE_PROFILE            = 0x00020;
-    private static final int PROFILE_POSTAL             = 0x00040;
-    private static final int PROFILE_ALEXA_SKILLS_R     = 0x00100;
-    private static final int PROFILE_ALEXA_SKILLS_RW    = 0x00200;
-    private static final int PROFILE_ALEXA_SKILLS_TEST  = 0x00800;
-    private static final int PROFILE_ALEXA_MODELS_R     = 0x01000;
-    private static final int PROFILE_ALEXA_MODELS_RW    = 0x02000;
+    private static final int PROFILE_NONE = 0x00000;
+    private static final int PROFILE_ALEXA_PRE_AUTH = 0x00001;
 //////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
-    private static final int PROFILE_ALEXA_PRE_AUTH_ASP = 0x03000;
+    private static final int PROFILE_ALEXA_PRE_AUTH_ASP = 0x00002;
 //////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
+    private static final int PROFILE_USERID = 0x00010;
+    private static final int PROFILE_PROFILE = 0x00020;
+    private static final int PROFILE_POSTAL = 0x00040;
+    private static final int PROFILE_ALEXA_SKILLS_R = 0x00100;
+    private static final int PROFILE_ALEXA_SKILLS_RW = 0x00200;
+    private static final int PROFILE_ALEXA_SKILLS_TEST = 0x00800;
+    private static final int PROFILE_ALEXA_MODELS_R = 0x01000;
+    private static final int PROFILE_ALEXA_MODELS_RW = 0x02000;
     // Untested scope for Amazon Dash
-    private static final int PROFILE_DASH_REPLENISH     = 0x10000;
-    
+    private static final int PROFILE_DASH_REPLENISH = 0x10000;
+
     private static final String TAG = "AmazonLoginPlugin";
-    
+
     private static final String AMAZON_APP_SHOPPING_NAME = "com.amazon.mShop.android.shopping";
     private static final String AMAZON_APP_ALEXA_NAME = "com.amazon.dee.app";
 
@@ -68,14 +68,12 @@ public class AmazonLoginPlugin extends CordovaPlugin {
     private static final String ACTION_GET_TOKEN = "getToken";
     private static final String ACTION_SIGNOUT = "signOut";
     private static final String ACTION_APP_EXISTS = "appExists";
-        
+
     // New stuff to support AVS Companion App
     private static final String ACTION_AUTHORIZE_DEVICE = "authorizeDevice";
-    
 //////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
     private static final String ACTION_AUTHORIZE_DEVICE_ASP = "authorizeDevice_ASP";
 //////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
-
 
     private static final String FIELD_ACCESS_TOKEN = "accessToken";
     private static final String FIELD_AUTHORIZATION_CODE = "authorizationCode";
@@ -83,12 +81,13 @@ public class AmazonLoginPlugin extends CordovaPlugin {
     private static final String FIELD_CLIENT_ID = "clientId";
     private static final String FIELD_REDIRECT_URI = "redirectURI";
     private static final String FIELD_APP_NAME = "appName";
-        
+
     // New stuff to support AVS Companion App
     // Code challenge method can be "plain" or " S256" (SHA256)
     private static final String CODE_CHALLENGE_METHOD = "S256";
-    
-    // Flag to catch Authorize Device flow where hosted splash has Skip and Back which are not bound
+
+    // Flag to catch Authorize Device flow where hosted splash has Skip and Back
+    // which are not bound
     private boolean mIsAuthDevice;
     private boolean mCompletedRequest;
     private String mProductID;
@@ -110,7 +109,7 @@ public class AmazonLoginPlugin extends CordovaPlugin {
                 productInstanceAttributes.put("deviceSerialNumber", productDSN);
                 scopeData.put("productInstanceAttributes", productInstanceAttributes);
                 scopeData.put("productID", productID);
-            
+
                 return ScopeFactory.scopeNamed("alexa:all", scopeData);
             } catch (JSONException e) {
                 // handle exception here
@@ -119,7 +118,7 @@ public class AmazonLoginPlugin extends CordovaPlugin {
         }
         return null;
     }
-    
+
     private Scope[] computeScopes(int mScopeFlag) {
         List<Scope> scopes = new ArrayList<Scope>();
         if ((mScopeFlag & PROFILE_USERID) != 0) {
@@ -165,7 +164,9 @@ public class AmazonLoginPlugin extends CordovaPlugin {
 //////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
         if ((mScopeFlag & PROFILE_ALEXA_PRE_AUTH_ASP) != 0) {
             scopes.add(ScopeFactory.scopeNamed("alexa::enterprise::management"));
-            Log.i(TAG, "Profile: alexa models read scope added");
+            scopes.add(ScopeFactory.scopeNamed("credential_locker::wifi_management"));
+            scopes.add(ScopeFactory.scopeNamed("profile:user_id"));
+            Log.i(TAG, "Profile: alexa ASP model scopes added");
         }
 //////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
         return scopes.toArray(new Scope[scopes.size()]);
@@ -206,15 +207,15 @@ public class AmazonLoginPlugin extends CordovaPlugin {
                 mSavedCallbackContext.error("Authorization was cancelled before it could be completed");
             }
         };
-        
+
         mRequestContext.registerListener(mAuthListener);
-        Log.d(TAG, "Registered AuthorizeListener to plugin");      
+        Log.d(TAG, "Registered AuthorizeListener to plugin");
     }
 
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
         // Doing a new request
         this.mCompletedRequest = false;
-        
+
         this.mSavedCallbackContext = callbackContext;
         // Setup the options if provided...
         final JSONObject params = (args != null && args.length() > 0) ? args.getJSONObject(0) : null;
@@ -250,17 +251,17 @@ public class AmazonLoginPlugin extends CordovaPlugin {
                 mIsAuthDevice = true;
                 // Need to get the MAC address (DSN) of the new device from the App
                 // Optionally also provide the product ID?
-                // Also a code challenge from the online service using the challenge method: S256
+                // Also a code challenge from the online service using the challenge method:
+                // S256
 
                 cordova.getThreadPool().execute(new Runnable() {
                     public void run() {
-                        AuthorizationManager.authorize(new AuthorizeRequest
-                            .Builder(mRequestContext)
-                            .addScope(alexaScope(mProductID, mProductDSN))
-                            .addScopes(computeScopes(mScopeFlag))
-                            .forGrantType(AuthorizeRequest.GrantType.AUTHORIZATION_CODE)
-                            .withProofKeyParameters(mCodeChallenge, CODE_CHALLENGE_METHOD)
-                            .build());
+                        AuthorizationManager.authorize(new AuthorizeRequest.Builder(mRequestContext)
+                                .addScope(alexaScope(mProductID, mProductDSN))
+                                .addScopes(computeScopes(mScopeFlag))
+                                .forGrantType(AuthorizeRequest.GrantType.AUTHORIZATION_CODE)
+                                .withProofKeyParameters(mCodeChallenge, CODE_CHALLENGE_METHOD)
+                                .build());
                     }
                 });
             } else {
@@ -269,40 +270,38 @@ public class AmazonLoginPlugin extends CordovaPlugin {
         }
 //////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
         else if (ACTION_AUTHORIZE_DEVICE_ASP.equals(action)) {
-           Log.i(TAG, "Both Authorization ASP started");
-            Log.i(TAG, "Args: " + mProductID + ", " + mProductDSN + ", " + mCodeChallenge);
-            if (mProductID != null && mProductDSN != null && mCodeChallenge != null) {
-                mIsAuthDevice = true;
-                // Need to get the MAC address (DSN) of the new device from the App
-                // Optionally also provide the product ID?
-                // Also a code challenge from the online service using the challenge method: S256
-
-                cordova.getThreadPool().execute(new Runnable() {
-                    public void run() {
-                        AuthorizationManager.authorize(new AuthorizeRequest
-                            .Builder(mRequestContext)
-                            .addScope(alexaScope(mProductID, mProductDSN))
-                            .addScopes(computeScopes(mScopeFlag))
-                            .forGrantType(AuthorizeRequest.GrantType.AUTHORIZATION_CODE)
-                            .withProofKeyParameters(mCodeChallenge, CODE_CHALLENGE_METHOD)
-                            .build());
-                    }
-                });
-            } else {
-                Log.i(TAG, "Not authorizing without valid product ID, product DSN or code challenge");
-            }
-        }
-//////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
-
+            Log.i(TAG, "Both Authorization ASP started");
+             Log.i(TAG, "Args: " + mProductID + ", " + mProductDSN + ", " + mCodeChallenge);
+             if (mProductID != null && mProductDSN != null && mCodeChallenge != null) {
+                 mIsAuthDevice = true;
+                 // Need to get the MAC address (DSN) of the new device from the App
+                 // Optionally also provide the product ID?
+                 // Also a code challenge from the online service using the challenge method: S256
+ 
+                 cordova.getThreadPool().execute(new Runnable() {
+                     public void run() {
+                         AuthorizationManager.authorize(new AuthorizeRequest
+                             .Builder(mRequestContext)
+                             .addScope(alexaScope(mProductID, mProductDSN))
+                             .addScopes(computeScopes(mScopeFlag))
+                             .forGrantType(AuthorizeRequest.GrantType.AUTHORIZATION_CODE)
+                             .withProofKeyParameters(mCodeChallenge, CODE_CHALLENGE_METHOD)
+                             .build());
+                     }
+                 });
+             } else {
+                 Log.i(TAG, "Not authorizing without valid product ID, product DSN or code challenge");
+             }
+         }
+ //////////////////////////////////////////////////////////////////////// ASP ///////////////////////////////////////////////////////////////////////////////////////////////
         else if (ACTION_AUTHORIZE.equals(action)) {
             Log.i(TAG, "Authorization started");
-            Log.i(TAG, "Args: " + mScopeFlag );
-            
+            Log.i(TAG, "Args: " + mScopeFlag);
+
             if (mScopeFlag != PROFILE_NONE) {
                 cordova.getThreadPool().execute(new Runnable() {
                     public void run() {
-                        AuthorizationManager.authorize(new AuthorizeRequest
-                                .Builder(mRequestContext)
+                        AuthorizationManager.authorize(new AuthorizeRequest.Builder(mRequestContext)
                                 .addScopes(computeScopes(mScopeFlag))
                                 .build());
                     }
@@ -333,33 +332,33 @@ public class AmazonLoginPlugin extends CordovaPlugin {
 
         } else if (ACTION_GET_TOKEN.equals(action)) {
             Log.i(TAG, "Get token started");
-            Log.i(TAG, "Args: " + mScopeFlag );
-            
+            Log.i(TAG, "Args: " + mScopeFlag);
+
             if (mScopeFlag != PROFILE_NONE) {
 
                 cordova.getThreadPool().execute(new Runnable() {
                     public void run() {
                         AuthorizationManager.getToken(cordova.getActivity().getApplicationContext(),
-                            computeScopes(mScopeFlag),
-                            new Listener<AuthorizeResult, AuthError>() {
+                                computeScopes(mScopeFlag),
+                                new Listener<AuthorizeResult, AuthError>() {
 
-                            @Override
-                            public void onSuccess(AuthorizeResult result) {
-                                if (result.getAccessToken() != null) {
-                                    /* The user is signed in */
-                                    sendAuthorizeResult(result);
-                                } else {
-                                    mSavedCallbackContext.error("The user is not signed in");
-                                }
-                            }
+                                    @Override
+                                    public void onSuccess(AuthorizeResult result) {
+                                        if (result.getAccessToken() != null) {
+                                            /* The user is signed in */
+                                            sendAuthorizeResult(result);
+                                        } else {
+                                            mSavedCallbackContext.error("The user is not signed in");
+                                        }
+                                    }
 
-                            @Override
-                            public void onError(AuthError ae) {
-                                /* The user is not signed in */
-                                mSavedCallbackContext.error("The user is not signed in");
+                                    @Override
+                                    public void onError(AuthError ae) {
+                                        /* The user is not signed in */
+                                        mSavedCallbackContext.error("The user is not signed in");
 
-                            }
-                        });
+                                    }
+                                });
                     }
                 });
             } else {
@@ -369,27 +368,29 @@ public class AmazonLoginPlugin extends CordovaPlugin {
             Log.i(TAG, "Signout started");
             cordova.getThreadPool().execute(new Runnable() {
                 public void run() {
-                    AuthorizationManager.signOut(cordova.getActivity().getApplicationContext(), new Listener<Void, AuthError>() {
-                        @Override
-                        public void onSuccess(Void response) {
-                            // Set logged out state in UI
-                            Log.i(TAG, "The user is signed out");
-                            JSONObject logoutResult = new JSONObject();
-                            try {
-                                logoutResult.put(FIELD_ACCESS_TOKEN, "");
-                                mSavedCallbackContext.success(logoutResult);
-                            } catch (Exception e) {
-                                mSavedCallbackContext.error("Trouble creating success logout JSON: " + e.getMessage());
-                            }
-                        }
+                    AuthorizationManager.signOut(cordova.getActivity().getApplicationContext(),
+                            new Listener<Void, AuthError>() {
+                                @Override
+                                public void onSuccess(Void response) {
+                                    // Set logged out state in UI
+                                    Log.i(TAG, "The user is signed out");
+                                    JSONObject logoutResult = new JSONObject();
+                                    try {
+                                        logoutResult.put(FIELD_ACCESS_TOKEN, "");
+                                        mSavedCallbackContext.success(logoutResult);
+                                    } catch (Exception e) {
+                                        mSavedCallbackContext
+                                                .error("Trouble creating success logout JSON: " + e.getMessage());
+                                    }
+                                }
 
-                        @Override
-                        public void onError(AuthError authError) {                            
-                            // Log the error
-                            Log.i(TAG, "The user is not signed out");
-                            mSavedCallbackContext.error("The user is not signed out");
-                        }
-                    });
+                                @Override
+                                public void onError(AuthError authError) {
+                                    // Log the error
+                                    Log.i(TAG, "The user is not signed out");
+                                    mSavedCallbackContext.error("The user is not signed out");
+                                }
+                            });
                 }
             });
         } else if (ACTION_APP_EXISTS.equals(action)) {
@@ -407,7 +408,7 @@ public class AmazonLoginPlugin extends CordovaPlugin {
                     String className = launchIntent.getComponent().getClassName();
                     logoutResult.put(FIELD_APP_NAME, className);
                 } else
-                    logoutResult.put(FIELD_APP_NAME, "");                
+                    logoutResult.put(FIELD_APP_NAME, "");
                 mSavedCallbackContext.success(logoutResult);
                 if (mAppLaunch == true && launchIntent != null)
                     this.cordova.getActivity().startActivity(launchIntent);
@@ -420,13 +421,13 @@ public class AmazonLoginPlugin extends CordovaPlugin {
         }
         return true;
     }
-        
+
     @Override
     public void onDestroy() {
         Log.d(TAG, "Plugin about to invoke super Destroy()");
         super.onDestroy();
     }
-    
+
     @Override
     public void onResume(boolean multitasking) {
         super.onResume(multitasking);
@@ -443,10 +444,11 @@ public class AmazonLoginPlugin extends CordovaPlugin {
                     if (!mCompletedRequest) {
                         Log.d(TAG, "onResumed however requests are still pending on Authorize Device workflow");
                         if (mSavedCallbackContext != null)
-                            mSavedCallbackContext.error("Authorize device workflow was either skipped or popped and not completed");
-                        }
+                            mSavedCallbackContext
+                                    .error("Authorize device workflow was either skipped or popped and not completed");
                     }
-            }, 1000); // Delay check for 1 sec 
+                }
+            }, 1000); // Delay check for 1 sec
         }
     }
 
@@ -464,7 +466,8 @@ public class AmazonLoginPlugin extends CordovaPlugin {
             if (result.getUser() != null)
                 authResult.put(FIELD_USER, new JSONObject(result.getUser().getUserInfo()));
             // For Companion app we need to...
-            // Securely send the authorization code, redirectUri, and clientId to the product
+            // Securely send the authorization code, redirectUri, and clientId to the
+            // product
             mSavedCallbackContext.success(authResult);
             mIsAuthDevice = false; // Reset flag
         } catch (Exception e) {
